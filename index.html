@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Đền Khánh Vân AR</title>
+
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #111;
+    }
+
+    #guide {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      right: 12px;
+      z-index: 10;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.94);
+      color: #222;
+      text-align: center;
+    }
+
+    #panel {
+      display: none;
+      position: fixed;
+      z-index: 11;
+      left: 5%;
+      right: 5%;
+      bottom: 20px;
+      max-height: 45vh;
+      overflow-y: auto;
+      padding: 18px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.97);
+      color: #222;
+      box-shadow: 0 4px 18px #0005;
+    }
+
+    #panel h2 {
+      margin-top: 0;
+      color: #7b2d20;
+    }
+
+    #panel button {
+      padding: 10px 16px;
+      border: 0;
+      border-radius: 8px;
+      background: #7b2d20;
+      color: white;
+      font-size: 16px;
+    }
+
+    a-scene {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="guide">
+    <strong>ĐỀN KHÁNH VÂN AR</strong>
+    <div>Cho phép sử dụng camera, sau đó hướng camera vào một trong ba ảnh mục tiêu.</div>
+  </div>
+
+  <div id="panel" role="status" aria-live="polite">
+    <h2 id="panelTitle"></h2>
+    <p id="panelText"></p>
+    <button id="closePanel" type="button">Đóng nội dung</button>
+  </div>
+
+  <a-scene
+    mindar-image="imageTargetSrc: ./targets.mind;"
+    color-space="sRGB"
+    renderer="colorManagement: true"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false">
+
+    <a-camera
+      position="0 0 0"
+      look-controls="enabled: false">
+    </a-camera>
+
+    <a-entity id="target0" mindar-image-target="targetIndex: 0"></a-entity>
+    <a-entity id="target1" mindar-image-target="targetIndex: 1"></a-entity>
+    <a-entity id="target2" mindar-image-target="targetIndex: 2"></a-entity>
+  </a-scene>
+
+  <script>
+    const panel = document.getElementById("panel");
+    const panelTitle = document.getElementById("panelTitle");
+    const panelText = document.getElementById("panelText");
+
+    const contents = [
+      {
+        title: "1. Giới thiệu Đền Khánh Vân",
+        text: "Bổ sung vị trí, thời gian hình thành, nhân vật được thờ và thông tin giới thiệu đã được kiểm chứng về di tích."
+      },
+      {
+        title: "2. Lịch sử và kiến trúc",
+        text: "Bổ sung các mốc lịch sử, đặc điểm kiến trúc, hiện vật và câu chuyện lịch sử có nguồn xác thực."
+      },
+      {
+        title: "3. Lễ hội và giá trị văn hóa",
+        text: "Bổ sung thời gian tổ chức lễ hội, các nghi thức tiêu biểu và ý nghĩa văn hóa đối với cộng đồng địa phương."
+      }
+    ];
+
+    let activeTarget = null;
+
+    function showContent(index) {
+      activeTarget = index;
+      panelTitle.textContent = contents[index].title;
+      panelText.textContent = contents[index].text;
+      panel.style.display = "block";
+    }
+
+    function hideContent(index) {
+      if (activeTarget === index) {
+        panel.style.display = "none";
+        activeTarget = null;
+      }
+    }
+
+    [0, 1, 2].forEach(function(index) {
+      const target = document.getElementById("target" + index);
+
+      target.addEventListener("targetFound", function() {
+        showContent(index);
+      });
+
+      target.addEventListener("targetLost", function() {
+        hideContent(index);
+      });
+    });
+
+    document.getElementById("closePanel").addEventListener("click", function() {
+      panel.style.display = "none";
+    });
+  </script>
+</body>
+</html>
