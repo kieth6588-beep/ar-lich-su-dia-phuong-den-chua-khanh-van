@@ -100,7 +100,7 @@
     const panel = document.getElementById("panel");
     const panelTitle = document.getElementById("panelTitle");
     const panelText = document.getElementById("panelText");
-
+const panelVideo = document.getElementById("panelVideo");
     const contents = [
       {
         title: "1. Giới thiệu Đền Khánh Vân",
@@ -119,17 +119,38 @@
 
     let activeTarget = null;
 
-    function showContent(index) {
-      activeTarget = index;
-      panelTitle.textContent = contents[index].title;
-      panelText.textContent = contents[index].text;
-      panel.style.display = "block";
-    }
+ 
+function showContent(index) {
+  activeTarget = index;
 
-    function hideContent(index) {
-      if (activeTarget === index) {
-        panel.style.display = "none";
-        activeTarget = null;
+  const item = contents[index];
+  panelTitle.textContent = item.title;
+  panelText.textContent = item.text;
+
+  panelVideo.pause();
+  panelVideo.removeAttribute("src");
+  panelVideo.style.display = "none";
+  panelVideo.load();
+
+  if (item.video) {
+    panelVideo.src = item.video;
+    panelVideo.style.display = "block";
+    panelVideo.load();
+  }
+
+  panel.style.display = "block";
+}
+   
+function hideContent(index) {
+  if (activeTarget === index) {
+    panel.style.display = "none";
+    panelVideo.pause();
+    panelVideo.removeAttribute("src");
+    panelVideo.load();
+    panelVideo.style.display = "none";
+    activeTarget = null;
+  }
+}
       }
     }
 
